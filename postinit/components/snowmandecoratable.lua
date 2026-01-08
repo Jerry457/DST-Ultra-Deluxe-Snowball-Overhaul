@@ -243,6 +243,7 @@ debug.setupvalue(_DoDecor, i, CreateDecor)
 SnowmanDecoratable.ApplyDecor = function(decordata, decors, basesize, stacks, stackoffsets, owner, ...)
     _ApplyDecor(decordata, decors, basesize, stacks, stackoffsets, owner, ...)
     for i, decor in ipairs(decors) do
+        decor.AnimState:SetFinalOffset(i + 1)
         decor:AttachHighLightParent(owner)
     end
     owner.highlightchildren = {}
