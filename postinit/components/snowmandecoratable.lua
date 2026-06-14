@@ -72,9 +72,7 @@ AddComponentPostInit("snowmandecoratable", function(self, inst)
     self.stackskins = net_string(inst.GUID, "snowmandecoratable.stackskins", "stacksdirty")
 
     if not self.ismastersim then
-        local OnDecorDataDirty_Client = GetEventCallbacks(inst, "decordatadirty")
-        inst:RemoveEventCallback("decordatadirty", OnDecorDataDirty_Client)
-
+        -- Keep client-side decordatadirty callback so CreateEntity() decorations render on client
         local OnStacksDirty_Client = GetEventCallbacks(inst, "stacksdirty")
         inst:RemoveEventCallback("stacksdirty", OnStacksDirty_Client)
     else
@@ -234,7 +232,12 @@ end
 local _ApplyDecor = SnowmanDecoratable.ApplyDecor
 local _CreateDecor, i, _DoDecor = GlassicAPI.UpvalueUtil.GetUpvalue(_ApplyDecor, "_DoDecor.CreateDecor")
 local function CreateDecor(itemdata, rot, flip, ...)
-    local inst = SpawnPrefab("snowman_decorate")
+    local inst = CreateEntity()
+    inst:AddTag("FX")
+    inst:AddTag("NOCLICK")
+    inst.entity:AddTransform()
+    inst.entity:AddAnimState()
+    inst.entity:AddFollower()
     SnowmanDecoratable.SnowmanDecorateCommon(inst, itemdata, flip, rot)
     return inst
 end
@@ -242,10 +245,9 @@ debug.setupvalue(_DoDecor, i, CreateDecor)
 
 SnowmanDecoratable.ApplyDecor = function(decordata, decors, basesize, stacks, stackoffsets, owner, ...)
     _ApplyDecor(decordata, decors, basesize, stacks, stackoffsets, owner, ...)
-    for i, decor in ipairs(decors) do
-        decor.AnimState:SetFinalOffset(i + 1)
-        decor:AttachHighLightParent(owner)
-    end
     owner.highlightchildren = {}
+    for _, decor in ipairs(decors) do
+        table.insert(owner.highlightchildren, decor)
+    end
 end
 GlassicAPI.UpvalueUtil.SetUpvalue(SnowmanDecoratable.DoRefreshDecorData, "ApplyDecor", SnowmanDecoratable.ApplyDecor)
