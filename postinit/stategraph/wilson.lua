@@ -71,7 +71,7 @@ AddStategraphPostInit("wilson", function(sg)
     local old_onupdate = sg.states["pushing_walk"].onupdate
     sg.states["pushing_walk"].onupdate = function(inst, dt)
         local target = inst.sg.statemem.target
-        if target == nil or target.components.pushable == nil then
+        if target == nil or target.components.pushable == nil or target.components.snowmandecoratable == nil then
             return old_onupdate(inst, dt)
         end
         if not (target and target.components.pushable and target.components.pushable.doer == inst and target:IsValid()) then

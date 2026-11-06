@@ -47,6 +47,10 @@ end
 
 local _OnUpdate = Pushable.OnUpdate
 function Pushable:OnUpdate(dt)
+    if self.inst.components.snowmandecoratable == nil then
+        return _OnUpdate(self, dt)
+    end
+
     -- 覆盖雪球滚动速度
     local original_speed = self.speed
     self.speed = self.overridespeed or self.speed
